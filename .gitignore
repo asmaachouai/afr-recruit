@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+htmlcov/
+*.log
+
+# Node
+node_modules/
+.next/
+.nuxt/
+out/
+dist/
+
+# ML artifacts
+ml/data/raw/*
+ml/data/processed/*
+*.pkl
+*.joblib
+*.h5
+*.onnx
+!.gitkeep
+
+# Docker
+docker/nginx/certs/
+
+# IDE
+.vscode/settings.json
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
