@@ -74,7 +74,7 @@ class CVService:
         if ext not in ALLOWED_EXTENSIONS:
             raise HTTPException(
                 status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-                detail=f"Unsupported file type. Allowed: PDF, DOCX, TXT",
+                detail="Unsupported file type. Allowed: PDF, DOCX, TXT",
             )
 
         # Determine MIME type
@@ -145,10 +145,12 @@ class CVService:
             ats_result = self.ats_scorer.score(parsed_data, raw_text)
 
             # Step 5: Update CVDocument
-            cv_doc.raw_text = raw_text[:50000]  # store first 50k chars
-            cv_doc.detected_language = CVLanguage(language) if language in [
-                e.value for e in CVLanguage
-            ] else CVLanguage.MIXED
+            cv_doc.raw_text = raw_text[:50000]
+            cv_doc.detected_language = (
+                CVLanguage(language)
+                if language in [e.value for e in CVLanguage]
+                else CVLanguage.MIXED
+            )
             cv_doc.parsed_data = parsed_data
             cv_doc.ats_score = ats_result.score
             cv_doc.ats_feedback = {
@@ -169,6 +171,22 @@ class CVService:
             if candidate and parsed_data.get("skills"):
                 candidate.skills = parsed_data["skills"][:20]
 
+            # Step 7: Index CV embedding for semantic matching
+            # Import here to avoid circular imports
+            from app.services.matching_service import MatchingService
+            try:
+                matching_service = MatchingService(self.db)
+                await matching_service.index_candidate_cv(
+                    cv_doc.candidate_id, cv_doc
+                )
+                logger.info("CV indexed for matching", cv_id=str(cv_id))
+            except Exception as index_error:
+                logger.warning(
+                    "CV indexing failed — CV is parsed but not searchable yet",
+                    cv_id=str(cv_id),
+                    error=str(index_error),
+                )
+
             await self.db.commit()
             logger.info(
                 "CV processed successfully",
@@ -183,7 +201,9 @@ class CVService:
             logger.error("CV processing failed", cv_id=str(cv_id), error=str(e))
             raise
 
-    async def get_cv(self, cv_id: uuid.UUID, candidate_id: uuid.UUID) -> CVDocument:
+    async def get_cv(
+        self, cv_id: uuid.UUID, candidate_id: uuid.UUID
+    ) -> CVDocument:
         """Get a CV document, ensuring it belongs to the requesting candidate."""
         result = await self.db.execute(
             select(CVDocument).where(

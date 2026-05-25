@@ -11,6 +11,7 @@ if sys.platform == "win32":
 import logging
 from contextlib import asynccontextmanager
 from app.api.v1.candidates import router as candidates_router
+from app.api.v1.jobs import router as jobs_router
 
 import structlog
 from fastapi import FastAPI
@@ -56,6 +57,8 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 # Register routers
 app.include_router(auth_router, prefix="/api/v1")
 app.include_router(candidates_router, prefix="/api/v1")
+app.include_router(jobs_router, prefix="/api/v1")
+
 
 
 @app.get("/health", tags=["Health"])
