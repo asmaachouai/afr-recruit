@@ -1,7 +1,12 @@
 """
-AFR-Recruit — AI Recruitment Fairness Platform
-Main FastAPI application entry point
+AFR-Recruit API — main application entry point.
 """
+
+import sys
+
+if sys.platform == "win32":
+    import asyncio
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 import logging
 from contextlib import asynccontextmanager
@@ -13,6 +18,8 @@ from fastapi.middleware.gzip import GZipMiddleware
 
 from app.core.config import settings
 from app.core.logging import configure_logging
+from app.core.redis import close_redis
+from app.api.v1.auth import router as auth_router
 
 configure_logging()
 logger = structlog.get_logger(__name__)
@@ -20,10 +27,9 @@ logger = structlog.get_logger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Application lifespan — startup and shutdown events."""
     logger.info("Starting AFR-Recruit API", environment=settings.APP_ENV)
-    # DB connection pool, ML model loading, FAISS index will be initialized here
     yield
+    await close_redis()
     logger.info("Shutting down AFR-Recruit API")
 
 
@@ -37,7 +43,6 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.ALLOWED_ORIGINS,
@@ -47,10 +52,12 @@ app.add_middleware(
 )
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
+# Register routers
+app.include_router(auth_router, prefix="/api/v1")
+
 
 @app.get("/health", tags=["Health"])
 async def health_check():
-    """Health check endpoint — used by Docker and load balancers."""
     return {"status": "healthy", "service": "afr-recruit-api", "version": "1.0.0"}
 
 
