@@ -168,7 +168,7 @@ class MatchingService:
             for i, result in enumerate(top_results)
         ]
 
-        # Store application records
+        # Store application records and trigger fairness analysis
         await self._store_match_results(job_id, matches)
 
         return MatchResponse(
@@ -181,7 +181,12 @@ class MatchingService:
     async def _store_match_results(
         self, job_id: uuid.UUID, matches: list[CandidateMatchResult]
     ) -> None:
-        """Persist ranking results as Application records."""
+        """
+        Persist ranking results as Application records,
+        then trigger fairness analysis on each application.
+        """
+        stored_application_ids = []
+
         for match in matches:
             candidate_uuid = uuid.UUID(match.candidate_id)
 
@@ -212,4 +217,27 @@ class MatchingService:
                 )
                 self.db.add(app)
 
+            await self.db.flush()
+            stored_application_ids.append(app.id)
+
         await self.db.commit()
+
+        # Trigger fairness analysis for each application
+        # Import here to avoid circular imports at module level
+        from app.services.fairness_service import FairnessService
+
+        fairness_service = FairnessService(self.db)
+
+        for application_id in stored_application_ids:
+            try:
+                await fairness_service.analyze_application(application_id)
+                logger.info(
+                    "Fairness analysis completed",
+                    application_id=str(application_id),
+                )
+            except Exception as e:
+                logger.warning(
+                    "Fairness analysis failed — non-fatal, continuing",
+                    application_id=str(application_id),
+                    error=str(e),
+                )
