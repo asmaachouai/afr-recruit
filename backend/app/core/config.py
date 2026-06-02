@@ -12,7 +12,7 @@ class Settings(BaseSettings):
         env_file=".env",
         env_file_encoding="utf-8",
         case_sensitive=False,
-        extra="ignore",          # ignore any .env keys not defined here
+        extra="ignore",
     )
 
     # App
@@ -59,5 +59,7 @@ class Settings(BaseSettings):
     PROMETHEUS_ENABLED: bool = True
     SENTRY_DSN: str = ""
 
+    #Hugging Face
+    HF_TOKEN: str = "",
 
 settings = Settings()

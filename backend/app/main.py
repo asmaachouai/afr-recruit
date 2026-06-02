@@ -31,9 +31,35 @@ logger = structlog.get_logger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Starting AFR-Recruit API", environment=settings.APP_ENV)
+
+    # Pre-load ML models in background so first request is fast
+    import asyncio
+    loop = asyncio.get_event_loop()
+    await loop.run_in_executor(None, _preload_models)
+
     yield
     await close_redis()
     logger.info("Shutting down AFR-Recruit API")
+
+
+def _preload_models():
+    """Load heavy ML models at startup instead of on first request."""
+    try:
+        import os
+        from app.core.config import settings
+        if settings.HF_TOKEN:
+            os.environ["HF_TOKEN"] = settings.HF_TOKEN
+            os.environ["HUGGING_FACE_HUB_TOKEN"] = settings.HF_TOKEN
+
+        from app.ml.models.embedding_service import embedding_service
+        embedding_service.load()
+    except Exception as e:
+        pass
+    try:
+        from app.ml.models.embedding_service import embedding_service
+        embedding_service.load()
+    except Exception as e:
+        pass  # non-fatal — model will load on first request
 
 
 app = FastAPI(
