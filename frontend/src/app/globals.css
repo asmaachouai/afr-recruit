@@ -1,37 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --mkc-rust:        #C1440E;
-  --mkc-terracotta:  #D4622A;
-  --mkc-clay:        #E8854A;
-  --mkc-sand:        #F5C98A;
-  --mkc-cream:       #FDF4E7;
-  --mkc-warm:        #FAE8D0;
-  --mkc-ochre:       #B8860B;
-  --mkc-saffron:     #E8A020;
-  --mkc-rose:        #C17B6A;
-  --mkc-dark:        #2C1A0E;
-  --mkc-mid:         #5C3320;
-  --mkc-muted:       #9A6B55;
-  --mkc-border:      #E8C4A8;
-  --mkc-surface:     #FDF8F2;
-
-  --background:            var(--mkc-surface);
-  --foreground:            var(--mkc-dark);
-  --card:                  #FFFFFF;
-  --card-foreground:       var(--mkc-dark);
-  --border:                var(--mkc-border);
-  --input:                 var(--mkc-border);
-  --primary:               var(--mkc-rust);
-  --primary-foreground:    var(--mkc-cream);
-  --secondary:             var(--mkc-warm);
-  --secondary-foreground:  var(--mkc-dark);
-  --muted:                 var(--mkc-warm);
-  --muted-foreground:      var(--mkc-muted);
-  --accent:                var(--mkc-sand);
-  --accent-foreground:     var(--mkc-dark);
-  --destructive:           #DC2626;
-  --radius:                0.5rem;
+  --mkc-rust:       #C1440E;
+  --mkc-terracotta: #D4622A;
+  --mkc-clay:       #E8854A;
+  --mkc-sand:       #F5C98A;
+  --mkc-cream:      #FDF4E7;
+  --mkc-warm:       #FAE8D0;
+  --mkc-ochre:      #B8860B;
+  --mkc-saffron:    #E8A020;
+  --mkc-rose:       #C17B6A;
+  --mkc-dark:       #2C1A0E;
+  --mkc-mid:        #5C3320;
+  --mkc-muted:      #9A6B55;
+  --mkc-border:     #E8C4A8;
+  --mkc-surface:    #FDF8F2;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -40,4 +23,14 @@ body {
   font-family: var(--font-sans, system-ui, sans-serif);
   background-color: var(--mkc-surface);
   color: var(--mkc-dark);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(-4px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }

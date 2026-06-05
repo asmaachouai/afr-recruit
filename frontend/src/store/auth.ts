@@ -13,8 +13,8 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isLoading: true,
-  setUser: (user) => set({ user }),
-  setLoading: (isLoading) => set({ isLoading }),
+  setUser:   (user)      => set({ user }),
+  setLoading:(isLoading) => set({ isLoading }),
   logout: () => {
     setAccessToken(null)
     localStorage.removeItem("refresh_token")

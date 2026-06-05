@@ -8,24 +8,6 @@ export interface User {
   is_verified: boolean
 }
 
-export interface TokenResponse {
-  access_token: string
-  refresh_token: string
-  token_type: string
-  expires_in: number
-}
-
-export interface CVDocument {
-  id: string
-  original_filename: string
-  status: "uploaded" | "processing" | "parsed" | "failed"
-  detected_language: string | null
-  ats_score: number | null
-  ats_feedback: ATSFeedback | null
-  parsed_data: ParsedCVData | null
-  created_at: string
-}
-
 export interface ATSFeedback {
   score: number
   grade: string
@@ -42,6 +24,17 @@ export interface ParsedCVData {
   experience: Array<Record<string, string | null>>
   languages: string[]
   summary: string | null
+}
+
+export interface CVDocument {
+  id: string
+  original_filename: string
+  status: "uploaded" | "processing" | "parsed" | "failed"
+  detected_language: string | null
+  ats_score: number | null
+  ats_feedback: ATSFeedback | null
+  parsed_data: ParsedCVData | null
+  created_at: string
 }
 
 export interface Job {

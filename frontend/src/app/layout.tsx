@@ -5,8 +5,8 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "AFR-Recruit — AI Recruitment Platform",
-  description: "Multilingual AI recruitment fairness platform for Morocco and Francophone Africa",
+  title: "AFR-Recruit — Plateforme IA",
+  description: "Recrutement equitable et multilingue pour le Maroc et l'Afrique Francophone",
 }
 
 export default function RootLayout({
@@ -16,7 +16,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" suppressHydrationWarning>
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className} style={{ margin: 0, padding: 0 }}>
+        {children}
+      </body>
     </html>
   )
 }

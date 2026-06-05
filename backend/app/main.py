@@ -18,6 +18,7 @@ import structlog
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
+from huggingface_hub import login
 
 from app.core.config import settings
 from app.core.logging import configure_logging
